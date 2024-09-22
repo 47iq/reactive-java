@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: reactive-java
+
+data:
+  dealQty: "10000000"
+  accountQty: "100"
+  tickers:
+    - AFLT
+    - ALRS
+    - LKOH
+    - MOEX
+    - TATN
+    - YDEX
+    - RSTI
+    - FLOT
+    - VKCO
+    - TCSI
+    - OZON
+    - POLY
+    - ROSN
