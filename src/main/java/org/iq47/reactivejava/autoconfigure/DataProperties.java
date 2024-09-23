@@ -12,5 +12,6 @@ import java.util.List;
 public class DataProperties {
     private List<String> tickers;
     private int accountQty;
-    private int dealQty;
+    private int instrumentQty;
+    private List<Integer> dealQty;
 }

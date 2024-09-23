@@ -9,19 +9,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
-public class StreamService implements MetricService{
+public class ParallelStreamService implements MetricService{
     private final DealRepository dealRepository;
     @Override
-    public Map<String, Double> getTodayInstrumentMeanDealPrice() {
+    public Map<String, Double> getTodayInstrumentTotalTradeVolume(LocalDate today) {
         return dealRepository
                 .getDeals()
                 .values()
                 .stream()
-                .filter(x -> x.getTradeDateTime().toLocalDate().equals(LocalDate.now()))
-                .collect(Collectors.toMap(
-                                Deal::getTicker,
-                                Deal::getPrice,
-                                (x, y) -> (x + y) / 2
+                .filter(x -> x.getTradeDateTime().toLocalDate().equals(today))
+                .parallel()
+                .collect(Collectors.toConcurrentMap(
+                        x -> x.getInstrument().getTicker(),
+                        Deal::getPrice,
+                        Double::sum
                         )
                 );
     }

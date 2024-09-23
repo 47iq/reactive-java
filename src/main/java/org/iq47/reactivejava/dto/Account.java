@@ -7,7 +7,6 @@ import lombok.Data;
 @Builder
 public class Account {
     Long id;
-    String description;
     String login;
     String password;
 }

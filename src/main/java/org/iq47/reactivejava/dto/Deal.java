@@ -4,24 +4,22 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Data
 @Builder
 public class Deal {
     private Long id;
-    private String ticker;
+    private Instrument instrument;
     private Long sellerId;
     private Long buyerId;
     private Double price;
     private Currency currency;
-    private Fee buyerFee;
-    private Fee sellerFee;
+    private List<Fee> fees;
     private OffsetDateTime tradeDateTime;
-
-    @Data
-    @Builder
-    public static class Fee {
-        private Double price;
-        private Currency currency;
+    public record Fee(Double price, Currency currency, FeeType feeType) { }
+    public enum FeeType {
+        BROKER,
+        MARKET
     }
 }

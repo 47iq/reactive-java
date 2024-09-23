@@ -3,7 +3,10 @@ spring:
     name: reactive-java
 
 data:
-  dealQty: "10000000"
+  dealQty:
+    - "50000"
+    - "500000"
+    - "2500000"
   accountQty: "100"
   tickers:
     - AFLT
