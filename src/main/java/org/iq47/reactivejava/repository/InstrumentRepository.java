@@ -1,7 +1,6 @@
 package org.iq47.reactivejava.repository;
 
 import lombok.Data;
-import org.iq47.reactivejava.dto.Deal;
 import org.iq47.reactivejava.dto.Instrument;
 
 import java.util.Map;

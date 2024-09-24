@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Data
+@Service
 public class DealRepository {
     private Map<Long, Deal> deals;
 }
