@@ -8,5 +8,5 @@ import lombok.Data;
 public class Account {
     Long id;
     String login;
-    String password;
+    String passwordHash;
 }

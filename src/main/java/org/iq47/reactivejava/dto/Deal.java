@@ -11,15 +11,18 @@ import java.util.List;
 public class Deal {
     private Long id;
     private Instrument instrument;
-    private Long sellerId;
-    private Long buyerId;
+    private Account seller;
+    private Account buyer;
     private Double price;
     private Currency currency;
     private List<Fee> fees;
     private OffsetDateTime tradeDateTime;
-    public record Fee(Double price, Currency currency, FeeType feeType) { }
+
     public enum FeeType {
         BROKER,
         MARKET
+    }
+
+    public record Fee(Double price, Currency currency, FeeType feeType) {
     }
 }

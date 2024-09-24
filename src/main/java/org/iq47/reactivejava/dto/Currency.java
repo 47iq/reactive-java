@@ -9,6 +9,7 @@ public enum Currency {
     HKD(13);
     @Getter
     private final double toRub;
+
     Currency(double toRub) {
         this.toRub = toRub;
     }

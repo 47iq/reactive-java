@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
-public class ParallelStreamService implements MetricService{
+public class ParallelStreamService implements MetricService {
     @Override
     @Timed(service = "Параллельный stream с дефолтным коллектором")
     public Map<String, Double> getTodayInstrumentTotalTradeVolume(LocalDate today, DealRepository dealRepository) {
@@ -23,9 +23,9 @@ public class ParallelStreamService implements MetricService{
                 .filter(x -> x.getTradeDateTime().toLocalDate().equals(today))
                 .parallel()
                 .collect(Collectors.toConcurrentMap(
-                        x -> x.getInstrument().getTicker(),
-                        Deal::getPrice,
-                        Double::sum
+                                x -> x.getInstrument().getTicker(),
+                                Deal::getPrice,
+                                Double::sum
                         )
                 );
     }
