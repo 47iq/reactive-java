@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class Deal {
     private Account buyer;
     private Double price;
     private Currency currency;
-    private List<Fee> fees;
+    private List<Fee> fees = new ArrayList<>();
     private OffsetDateTime tradeDateTime;
 
     public enum FeeType {
@@ -23,6 +24,33 @@ public class Deal {
         MARKET
     }
 
-    public record Fee(Double price, Currency currency, FeeType feeType) {
+    public class Fee {
+        Double feePrice;
+        Currency feeCurrency;
+        FeeType feeType;
+
+        public Fee(FeeType feeType) {
+            this.feeType = feeType;
+            this.feePrice = price * currency.getToRub() * 0.02;
+            this.feeCurrency = switch (instrument.getMarket()) {
+                case HKEX -> Currency.HKD;
+                case MOEX -> Currency.RUB;
+                case SPBEX -> Currency.USD;
+            };
+        }
+    }
+
+    public void addFee(FeeType feeType) {
+        fees.add(new Fee(feeType));
+    }
+
+    public void setInstrument(Instrument instrument) {
+        Currency currency = switch (instrument.getMarket()) {
+            case HKEX -> Currency.HKD;
+            case MOEX -> Currency.RUB;
+            case SPBEX -> Currency.USD;
+        };
+        this.instrument = instrument;
+        this.currency = currency;
     }
 }

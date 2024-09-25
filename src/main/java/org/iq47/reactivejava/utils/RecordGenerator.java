@@ -40,17 +40,9 @@ public class RecordGenerator {
         return LongStream
                 .rangeClosed(0, dealQty)
                 .mapToObj(x -> {
-                    double priceRub = Math.random() * 1000;
+                    double price = Math.random() * 1000;
                     Instrument instrument = instruments.get((int) (Math.random() * instruments.size()));
                     List<Deal.Fee> fees = new ArrayList<>();
-                    Currency currency = switch (instrument.getMarket()) {
-                        case HKEX -> Currency.HKD;
-                        case MOEX -> Currency.RUB;
-                        case SPBEX -> Currency.USD;
-                    };
-                    fees.add(new Deal.Fee(priceRub * 0.02, Currency.RUB, Deal.FeeType.BROKER));
-                    fees.add(new Deal.Fee(priceRub / currency.getToRub() * 0.01, currency, Deal.FeeType.MARKET));
-                    double price = priceRub / currency.getToRub();
                     int minHour = instrument.getMarket().getTimeTable().getStartHourUTC();
                     int maxHour = instrument.getMarket().getTimeTable().getCloseHourUTC();
                     OffsetDateTime dateTime = OffsetDateTime.of(
@@ -61,16 +53,18 @@ public class RecordGenerator {
                             (int) (Math.random() * 60),
                             (int) (Math.random() * 60),
                             (int) (Math.random() * 60), ZoneOffset.UTC);
-                    return Deal.builder()
+                    Deal deal = Deal.builder()
                             .id(x)
                             .fees(fees)
                             .buyer(accounts.get((int) (Math.random() * accounts.size())))
                             .seller(accounts.get((int) (Math.random() * accounts.size())))
                             .price(price)
                             .tradeDateTime(dateTime)
-                            .currency(currency)
-                            .instrument(instrument)
                             .build();
+                    deal.setInstrument(instrument);
+                    deal.addFee(Deal.FeeType.BROKER);
+                    deal.addFee(Deal.FeeType.MARKET);
+                    return deal;
                 })
                 .collect(Collectors.toMap(
                         Deal::getId,
