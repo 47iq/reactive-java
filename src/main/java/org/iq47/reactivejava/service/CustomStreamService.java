@@ -59,7 +59,11 @@ public class CustomStreamService implements MetricService {
 
                              @Override
                              public Set<Characteristics> characteristics() {
-                                 return EnumSet.of(Characteristics.UNORDERED);
+                                 return EnumSet.of(
+                                         Characteristics.UNORDERED,
+                                         Characteristics.CONCURRENT,
+                                         Characteristics.IDENTITY_FINISH
+                                 );
                              }
                          }
                 );
