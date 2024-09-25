@@ -28,4 +28,5 @@ public class DefaultStreamService implements MetricService {
                         )
                 );
     }
+
 }
