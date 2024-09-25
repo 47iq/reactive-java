@@ -15,12 +15,10 @@ import java.util.stream.Collectors;
 public class ParallelStreamService implements MetricService {
     @Override
     @Timed(service = "Параллельный stream с дефолтным коллектором")
-    public Map<String, Double> getTodayInstrumentTotalTradeVolume(LocalDate today, DealRepository dealRepository) {
-        return dealRepository
-                .getDeals()
-                .values()
+    public Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository) {
+        return dealRepository.getDeals()
                 .stream()
-                .filter(x -> x.getTradeDateTime().toLocalDate().equals(today))
+                .filter(x -> x.getTradeDateTime().toLocalDate().equals(LocalDate.now()))
                 .parallel()
                 .collect(Collectors.toConcurrentMap(
                                 x -> x.getInstrument().getTicker(),

@@ -58,6 +58,7 @@ public class RecordGenerator {
                             .fees(fees)
                             .buyer(accounts.get((int) (Math.random() * accounts.size())))
                             .seller(accounts.get((int) (Math.random() * accounts.size())))
+                            .referrer((Math.random() > 0.5)  ? accounts.get((int) (Math.random() * accounts.size())):null)
                             .price(price)
                             .tradeDateTime(dateTime)
                             .build();

@@ -15,12 +15,12 @@ import java.util.Map;
 public class LoopService implements MetricService {
     @Override
     @Timed(service = "Преобразование через цикл")
-    public Map<String, Double> getTodayInstrumentTotalTradeVolume(LocalDate today, DealRepository dealRepository) {
-        Map<Long, Deal> dealMap = dealRepository.getDeals();
+    public Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository) {
+
         Map<String, Double> result = new HashMap<>();
-        for (Deal deal : dealMap.values()) {
+        for (Deal deal : dealRepository.getDeals()) {
             String ticker = deal.getInstrument().getTicker();
-            if (deal.getTradeDateTime().toLocalDate().equals(today)) {
+            if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
                 Double price = deal.getPrice();
                 if (!result.containsKey(ticker)) {
                     result.put(ticker, price);

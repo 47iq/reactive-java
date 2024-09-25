@@ -37,11 +37,11 @@ public class ReactiveJavaApplication {
         LocalDate today = LocalDate.now();
         for (int dealCnt : dataProperties.getDealQty()) {
             System.out.println("\nКоличество объектов: " + dealCnt);
-            dealRepository.setDeals(recordGenerator.generateDeals(dealCnt));
-            customStreamService.getTodayInstrumentTotalTradeVolume(today, dealRepository);
-            parallelStreamService.getTodayInstrumentTotalTradeVolume(today, dealRepository);
-            loopService.getTodayInstrumentTotalTradeVolume(today, dealRepository);
-            defaultStreamService.getTodayInstrumentTotalTradeVolume(today, dealRepository);
+            dealRepository.setDealsMap(recordGenerator.generateDeals(dealCnt));
+            customStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
+            parallelStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
+            loopService.getTodayInstrumentTotalTradeVolume(dealRepository);
+            defaultStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
         }
     }
 

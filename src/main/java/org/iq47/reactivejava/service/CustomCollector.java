@@ -3,6 +3,7 @@ package org.iq47.reactivejava.service;
 import org.iq47.reactivejava.dto.Deal;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +28,9 @@ public class CustomCollector implements Collector<Deal, Map<String, Double>, Map
         return (res, deal) -> {
             String ticker = deal.getInstrument().getTicker();
             Double price = deal.getPrice();
-            res.put(ticker, (res.getOrDefault(ticker, 0.0) + price));
+            if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
+                res.put(ticker, (res.getOrDefault(ticker, 0.0) + price));
+            }
         };
     }
 

@@ -17,13 +17,10 @@ public class CustomStreamService implements MetricService {
 
     @Override
     @Timed(service = "Параллельный stream с кастомным коллектором")
-    public Map<String, Double> getTodayInstrumentTotalTradeVolume(LocalDate today, DealRepository dealRepository) {
-        return dealRepository
-                .getDeals()
-                .values()
+    public Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository) {
+        return dealRepository.getDeals()
                 .stream()
                 .parallel()
-                .filter(x -> x.getTradeDateTime().toLocalDate().equals(today))
                 .collect(customCollector);
     }
 }

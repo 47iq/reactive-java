@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public interface MetricService {
-    Map<String, Double> getTodayInstrumentTotalTradeVolume(LocalDate today, DealRepository dealRepository);
+    Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository);
 }

@@ -14,9 +14,10 @@ public class Deal {
     private Instrument instrument;
     private Account seller;
     private Account buyer;
+    private Account referrer;
     private Double price;
     private Currency currency;
-    private List<Fee> fees = new ArrayList<>();
+    private List<Fee> fees;
     private OffsetDateTime tradeDateTime;
 
     public enum FeeType {
