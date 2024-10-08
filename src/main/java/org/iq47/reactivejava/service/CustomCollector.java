@@ -29,7 +29,7 @@ public class CustomCollector implements Collector<Deal, Map<String, Double>, Map
             String ticker = deal.getInstrument().getTicker();
             Double price = deal.getPrice();
             if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
-                res.put(ticker, (res.getOrDefault(ticker, 0.0) + price));
+                res.merge(ticker, price, Double::sum);
             }
         };
     }
