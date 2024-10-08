@@ -25,6 +25,7 @@ public class Deal {
         MARKET
     }
 
+    @Data
     public class Fee {
         Double feePrice;
         Currency feeCurrency;
