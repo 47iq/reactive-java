@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import org.iq47.reactivejava.aop.Timed;
 import org.iq47.reactivejava.dto.Deal;
 import org.iq47.reactivejava.repository.DealRepository;
-import org.iq47.reactivejava.stream.CustomSpliterator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @AllArgsConstructor
 @Service
@@ -18,8 +16,8 @@ public class ParallelStreamService implements MetricService {
     @Override
     @Timed(service = "Параллельный stream с дефолтным коллектором")
     public Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository) {
-        return StreamSupport
-                .stream(new CustomSpliterator<>(dealRepository.getDeals()), true)
+        return dealRepository.getDeals()
+                .stream()
                 .parallel()
                 .peek(deal -> {
                     try {
