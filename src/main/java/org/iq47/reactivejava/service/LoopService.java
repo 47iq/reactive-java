@@ -19,14 +19,14 @@ public class LoopService implements MetricService {
 
         Map<String, Double> result = new HashMap<>();
         for (Deal deal : dealRepository.getDeals()) {
-            String ticker = deal.getInstrument().getTicker();
+            try {
+                dealRepository.loadDataFromDb();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
-                Double price = deal.getPrice();
-                if (!result.containsKey(ticker)) {
-                    result.put(ticker, price);
-                } else {
-                    result.put(ticker, (result.get(ticker) + price));
-                }
+                result.merge(deal.getInstrument().getTicker(), deal.getPrice(), Double::sum);
             }
         }
         return result;

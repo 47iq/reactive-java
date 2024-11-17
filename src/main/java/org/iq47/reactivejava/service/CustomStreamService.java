@@ -3,10 +3,12 @@ package org.iq47.reactivejava.service;
 import lombok.AllArgsConstructor;
 import org.iq47.reactivejava.aop.Timed;
 import org.iq47.reactivejava.repository.DealRepository;
+import org.iq47.reactivejava.stream.CustomCollector;
+import org.iq47.reactivejava.stream.CustomSpliterator;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 
 @AllArgsConstructor
@@ -18,9 +20,15 @@ public class CustomStreamService implements MetricService {
     @Override
     @Timed(service = "Параллельный stream с кастомным коллектором")
     public Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository) {
-        return dealRepository.getDeals()
-                .stream()
-                .parallel()
+        return StreamSupport
+                .stream(new CustomSpliterator<>(dealRepository.getDeals()), true)
+                .peek(deal -> {
+                    try {
+                        dealRepository.loadDataFromDb();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .collect(customCollector);
     }
 }

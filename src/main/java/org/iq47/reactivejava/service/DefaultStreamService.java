@@ -19,6 +19,13 @@ public class DefaultStreamService implements MetricService {
     public Map<String, Double> getTodayInstrumentTotalTradeVolume(DealRepository dealRepository) {
         return dealRepository.getDeals()
                 .stream()
+                .peek(deal -> {
+                    try {
+                        dealRepository.loadDataFromDb();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .filter(x -> x.getTradeDateTime().toLocalDate().equals(LocalDate.now()))
                 .collect(Collectors.toMap(
                                 x -> x.getInstrument().getTicker(),

@@ -13,7 +13,11 @@ import java.util.Map;
 public class DealRepository {
     private Map<Long, Deal> dealsMap;
 
-    public Collection<Deal> getDeals(){
-        return dealsMap.values();
+    public List<Deal> getDeals(){
+        return dealsMap.values().stream().toList();
+    }
+
+    public void loadDataFromDb() throws InterruptedException {
+        Thread.sleep(0, 1);
     }
 }

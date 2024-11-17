@@ -1,4 +1,4 @@
-package org.iq47.reactivejava.service;
+package org.iq47.reactivejava.stream;
 
 import org.iq47.reactivejava.dto.Deal;
 import org.springframework.stereotype.Component;
