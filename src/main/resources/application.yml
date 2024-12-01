@@ -4,9 +4,8 @@ spring:
 
 data:
   dealQty:
-    - "50000"
-    - "500000"
-    - "2500000"
+    - "500"
+  delayEnabled: false
   accountQty: "100"
   tickers:
     - AFLT

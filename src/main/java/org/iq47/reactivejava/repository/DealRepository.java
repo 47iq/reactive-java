@@ -12,12 +12,15 @@ import java.util.Map;
 @Service
 public class DealRepository {
     private Map<Long, Deal> dealsMap;
+    private boolean delayEnabled;
 
     public List<Deal> getDeals(){
         return dealsMap.values().stream().toList();
     }
 
     public void loadDataFromDb() throws InterruptedException {
-        Thread.sleep(0, 1);
+        if (delayEnabled) {
+            Thread.sleep(0, 1);
+        }
     }
 }

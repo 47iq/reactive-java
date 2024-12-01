@@ -14,4 +14,5 @@ public class DataProperties {
     private int accountQty;
     private int instrumentQty;
     private List<Integer> dealQty;
+    private boolean delayEnabled;
 }

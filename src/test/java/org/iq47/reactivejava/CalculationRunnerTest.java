@@ -17,73 +17,65 @@ import org.iq47.reactivejava.utils.RecordGenerator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openjdk.jmh.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
-public class CalculationRunnerTest {
+@State(Scope.Benchmark)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+public class CalculationRunnerTest extends AbstractBenchmark {
+    private static Map<ReactiveJavaApplicationTests.Source, MetricService> metricServiceMap;
+    private static DealRepository dealRepository;
 
     @Autowired
-    CustomStreamService customStreamService;
-    @Autowired
-    DefaultStreamService defaultStreamService;
-    @Autowired
-    ParallelStreamService parallelStreamService;
-    @Autowired
-    LoopService loopService;
-    @Autowired
-    DataProperties dataProperties;
-    @Autowired
-    DealRepository dealRepository;
-    @Autowired
-    RecordGenerator recordGenerator;
-
-    private Map<ReactiveJavaApplicationTests.Source, MetricService> metricServiceMap;
-
-    private final Map<Integer, DealRepository> repositoryMap = new HashMap<>();
-
-    @PostConstruct
-    void init() {
+    void init(CustomStreamService customStreamService,
+              DefaultStreamService defaultStreamService,
+              ParallelStreamService parallelStreamService,
+              LoopService loopService,
+              DataProperties dataProperties,
+              RecordGenerator recordGenerator) {
         metricServiceMap = Map.of(
                 CUSTOM, customStreamService,
                 PARALLEL, parallelStreamService,
                 LOOP, loopService,
                 DEFAULT, defaultStreamService);
-
-        for (int cnt: dataProperties.getDealQty()) {
-            DealRepository repo = new DealRepository();
-            repo.setDealsMap(recordGenerator.generateDeals(cnt));
-            repositoryMap.put(cnt, repo);
-        }
+        dealRepository = new DealRepository();
+        dealRepository.setDealsMap(recordGenerator.generateDeals(dataProperties.getDealQty().get(0)));
+        dealRepository.setDelayEnabled(dataProperties.isDelayEnabled());
     }
 
-    @ParameterizedTest
+    @Benchmark
     @MethodSource("calcProps_source")
-    void calculationRunner(ReactiveJavaApplicationTests.Source source, int cnt) {
-        System.out.println("Deals: " + cnt);
-        System.out.println("Source: " + source.name());
-        MetricService metricService = metricServiceMap.get(source);
-        metricService.getTodayInstrumentTotalTradeVolume(repositoryMap.get(cnt));
+    public void calculationRunner() {
+        MetricService metricService = metricServiceMap.get(LOOP);
+        execute(metricService, dealRepository);
+    }
+
+    public void execute(MetricService metricService, DealRepository dealRepository) {
+        metricService.getTodayInstrumentTotalTradeVolume(dealRepository);
     }
 
     public static List<Arguments> calcProps_source() {
         return List.of(
+                Arguments.of(DEFAULT, 5000),
                 Arguments.of(DEFAULT, 50000),
-                Arguments.of(DEFAULT, 500000),
-                Arguments.of(DEFAULT, 2500000),
+                Arguments.of(DEFAULT, 250000),
+                Arguments.of(PARALLEL, 5000),
                 Arguments.of(PARALLEL, 50000),
-                Arguments.of(PARALLEL, 500000),
-                Arguments.of(PARALLEL, 2500000),
+                Arguments.of(PARALLEL, 250000),
+                Arguments.of(LOOP, 5000),
                 Arguments.of(LOOP, 50000),
-                Arguments.of(LOOP, 500000),
-                Arguments.of(LOOP, 2500000),
+                Arguments.of(LOOP, 250000),
+                Arguments.of(CUSTOM, 5000),
                 Arguments.of(CUSTOM, 50000),
-                Arguments.of(CUSTOM, 500000),
-                Arguments.of(CUSTOM, 2500000)
+                Arguments.of(CUSTOM, 250000)
         );
     }
 }

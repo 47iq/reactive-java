@@ -10,14 +10,12 @@ import org.springframework.stereotype.Component;
 public class TimedAspect {
     @Around("@annotation(timed)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint, Timed timed) throws Throwable {
-        System.out.println(timed.service() + ":");
         long start = System.currentTimeMillis();
 
         Object proceed = joinPoint.proceed();
 
         long executionTime = System.currentTimeMillis() - start;
 
-        System.out.println("Executed in " + executionTime + "ms");
         return proceed;
     }
 }
