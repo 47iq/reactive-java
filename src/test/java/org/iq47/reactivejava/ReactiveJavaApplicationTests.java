@@ -22,12 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 class ReactiveJavaApplicationTests {
     private final int DEALS_CNT = 1000;
-    enum Source {
-        CUSTOM,
-        PARALLEL,
-        LOOP,
-        DEFAULT
-    }
+    @Autowired
+    ObservableService observableService;
+
     private Map<Source, MetricService> metricServiceMap;
     private Map<String, Double> defaultResult;
     @Autowired
@@ -37,11 +34,7 @@ class ReactiveJavaApplicationTests {
     @Autowired
     ParallelStreamService parallelStreamService;
     @Autowired
-    LoopService loopService;
-    @Autowired
-    DealRepository dealRepository;
-    @Autowired
-    RecordGenerator recordGenerator;
+    FlowableService flowableService;
 
     @BeforeEach
     void init() {
@@ -49,9 +42,26 @@ class ReactiveJavaApplicationTests {
                 CUSTOM, customStreamService,
                 PARALLEL, parallelStreamService,
                 LOOP, loopService,
-                DEFAULT, defaultStreamService);
+                DEFAULT, defaultStreamService,
+                OBSERVABLE, observableService,
+                FLOWABLE, flowableService);
         dealRepository.setDealsMap(recordGenerator.generateDeals(DEALS_CNT));
         defaultResult = defaultStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
+    }
+    @Autowired
+    LoopService loopService;
+    @Autowired
+    DealRepository dealRepository;
+    @Autowired
+    RecordGenerator recordGenerator;
+
+    enum Source {
+        CUSTOM,
+        PARALLEL,
+        LOOP,
+        DEFAULT,
+        OBSERVABLE,
+        FLOWABLE
     }
 
     @ParameterizedTest

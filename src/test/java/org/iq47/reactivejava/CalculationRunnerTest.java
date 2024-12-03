@@ -1,18 +1,9 @@
 package org.iq47.reactivejava;
 
-import static org.iq47.reactivejava.ReactiveJavaApplicationTests.Source.CUSTOM;
-import static org.iq47.reactivejava.ReactiveJavaApplicationTests.Source.DEFAULT;
-import static org.iq47.reactivejava.ReactiveJavaApplicationTests.Source.LOOP;
-import static org.iq47.reactivejava.ReactiveJavaApplicationTests.Source.PARALLEL;
-
 import jakarta.annotation.PostConstruct;
 import org.iq47.reactivejava.autoconfigure.DataProperties;
 import org.iq47.reactivejava.repository.DealRepository;
-import org.iq47.reactivejava.service.CustomStreamService;
-import org.iq47.reactivejava.service.DefaultStreamService;
-import org.iq47.reactivejava.service.LoopService;
-import org.iq47.reactivejava.service.MetricService;
-import org.iq47.reactivejava.service.ParallelStreamService;
+import org.iq47.reactivejava.service.*;
 import org.iq47.reactivejava.utils.RecordGenerator;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -26,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.iq47.reactivejava.ReactiveJavaApplicationTests.Source.*;
+
 @SpringBootTest
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
@@ -33,11 +26,14 @@ import java.util.concurrent.TimeUnit;
 public class CalculationRunnerTest extends AbstractBenchmark {
     private static Map<ReactiveJavaApplicationTests.Source, MetricService> metricServiceMap;
     private static DealRepository dealRepository;
+    private static DataProperties dataProperties;
 
     @Autowired
     void init(CustomStreamService customStreamService,
               DefaultStreamService defaultStreamService,
               ParallelStreamService parallelStreamService,
+              ObservableService observableService,
+              FlowableService flowableService,
               LoopService loopService,
               DataProperties dataProperties,
               RecordGenerator recordGenerator) {
@@ -45,37 +41,22 @@ public class CalculationRunnerTest extends AbstractBenchmark {
                 CUSTOM, customStreamService,
                 PARALLEL, parallelStreamService,
                 LOOP, loopService,
-                DEFAULT, defaultStreamService);
+                DEFAULT, defaultStreamService,
+                OBSERVABLE, observableService,
+                FLOWABLE, flowableService);
         dealRepository = new DealRepository();
         dealRepository.setDealsMap(recordGenerator.generateDeals(dataProperties.getDealQty().get(0)));
         dealRepository.setDelayEnabled(dataProperties.isDelayEnabled());
+        CalculationRunnerTest.dataProperties = dataProperties;
     }
 
     @Benchmark
-    @MethodSource("calcProps_source")
     public void calculationRunner() {
-        MetricService metricService = metricServiceMap.get(LOOP);
+        MetricService metricService = metricServiceMap.get(ReactiveJavaApplicationTests.Source.valueOf(dataProperties.getServiceType()));
         execute(metricService, dealRepository);
     }
 
     public void execute(MetricService metricService, DealRepository dealRepository) {
         metricService.getTodayInstrumentTotalTradeVolume(dealRepository);
-    }
-
-    public static List<Arguments> calcProps_source() {
-        return List.of(
-                Arguments.of(DEFAULT, 5000),
-                Arguments.of(DEFAULT, 50000),
-                Arguments.of(DEFAULT, 250000),
-                Arguments.of(PARALLEL, 5000),
-                Arguments.of(PARALLEL, 50000),
-                Arguments.of(PARALLEL, 250000),
-                Arguments.of(LOOP, 5000),
-                Arguments.of(LOOP, 50000),
-                Arguments.of(LOOP, 250000),
-                Arguments.of(CUSTOM, 5000),
-                Arguments.of(CUSTOM, 50000),
-                Arguments.of(CUSTOM, 250000)
-        );
     }
 }

@@ -15,4 +15,5 @@ public class DataProperties {
     private int instrumentQty;
     private List<Integer> dealQty;
     private boolean delayEnabled;
+    private String serviceType;
 }

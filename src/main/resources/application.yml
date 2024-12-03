@@ -4,8 +4,9 @@ spring:
 
 data:
   dealQty:
-    - "500"
-  delayEnabled: false
+    - "5000"
+  serviceType: OBSERVABLE
+  delayEnabled: true
   accountQty: "100"
   tickers:
     - AFLT
