@@ -84,14 +84,15 @@
 
 <div>
     <h2>Текущие значения</h2>
-    <p>Задержка поступления событий (нс): <span id="inputSpeed" th:text="${inputSpeed}">0</span></p>
+    <p>Задержка поступления событий (мс): <span id="inputSpeed" th:text="${inputSpeed}">0</span></p>
+    <p>Количество потоков обработки: <span id="threadsCount" th:text="${threadsCount}">1</span></p>
 
     <h2>Значения метрик</h2>
     <table>
         <thead>
         <tr>
-            <th>Ключ</th>
-            <th>Значение</th>
+            <th>Акция</th>
+            <th>Объем торгов за сегодня (руб.)</th>
         </tr>
         </thead>
         <tbody id="metricsTableBody">
@@ -102,8 +103,11 @@
 
 <div>
     <h2>Обновить значения</h2>
-    <label for="newInputSpeed">Задержка поступления событий (нс):</label>
+    <label for="newInputSpeed">Интервал поступления событий о сделках (мс):</label>
     <input type="number" id="newInputSpeed" name="inputSpeed" required>
+
+    <label for="newInputSpeed">Количество потоков обработки: </label>
+    <input type="number" id="newThreadsCount" name="threadsCount" required>
 
     <button id="submitButton">Отправить</button>
     <div class="error-message" id="error-message"></div>
@@ -119,6 +123,7 @@
                 success: function(response) {
                     // Обновление остальных значений
                     $('#inputSpeed').text(response.inputSpeed);
+                    $('#threadsCount').text(response.threadsCount);
 
                     // Очистка предыдущих значений в таблице
                     $('#metricsTableBody').empty();
@@ -142,12 +147,14 @@
 
         $('#submitButton').click(function() {
             var inputSpeed = $('#newInputSpeed').val();
+            var threadsCount = $('#newThreadsCount').val();
 
             $.ajax({
                 type: 'POST',
                 url: '/data',
                 data: JSON.stringify({
                     inputSpeed: inputSpeed,
+                    threadsCount: threadsCount
                 }),
                 contentType: 'application/json',
                 success: function(response) {

@@ -18,7 +18,7 @@ public class SourceController {
     public String getExampleHTML(Model model) {
         model.addAttribute("avgValue", flowableService.getCurrentMetrics());
         model.addAttribute("inputSpeed", flowableService.getInputSpeed());
-        model.addAttribute("queueLength", flowableService.getQueueLength());
+        model.addAttribute("threadsCount", flowableService.getThreadsCount());
         return "index.html";
     }
 
@@ -27,12 +27,13 @@ public class SourceController {
         MetricsResponse response = new MetricsResponse();
         response.setAvgValue(flowableService.getCurrentMetrics());
         response.setInputSpeed(flowableService.getInputSpeed());
+        response.setThreadsCount(flowableService.getThreadsCount());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/data")
     public ResponseEntity<Void> postData(@RequestBody MetricsRequest request) {
-        flowableService.updateConfig(request.getInputSpeed());
+        flowableService.updateConfig(request.getInputSpeed(), request.getThreadsCount());
         return ResponseEntity.ok().build();
     }
 
@@ -46,6 +47,7 @@ public class SourceController {
     static class MetricsResponse {
         private Map<String, Double> avgValue;
         private int inputSpeed;
+        private int threadsCount;
     }
 
 }

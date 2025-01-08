@@ -43,7 +43,7 @@ public class BackpressureSubscriber implements FlowableSubscriber<Deal> {
         dealRepository.loadDataFromDb();
         String ticker = deal.getInstrument().getTicker();
         Double price = deal.getPrice();
-        Thread.sleep(0, delay);
+        Thread.sleep(delay);
         if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
             result.merge(ticker, price, Double::sum);
         }

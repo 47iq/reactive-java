@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
@@ -28,12 +29,14 @@ public class FlowableService implements MetricService {
     private final BackpressureSubscriber backpressureSubscriber;
     private final RecordGenerator recordGenerator;
     private Scheduler scheduler;
+    private ThreadPoolExecutor pool;
     private Flowable<Deal> flowable;
-    private int inputSpeed = 10000;
+    private int threadsCount = 1;
+    private int inputSpeed = 1;
 
     @PostConstruct
     public void init() {
-        ExecutorService pool = newFixedThreadPool(1);
+        pool = (ThreadPoolExecutor) newFixedThreadPool(1);
         scheduler = Schedulers.from(pool);
         flowable = Observable.fromStream(Stream.generate(recordGenerator::generateDeal)).toFlowable(BackpressureStrategy.BUFFER);
         backpressureSubscriber.setDelay(inputSpeed);
@@ -58,13 +61,25 @@ public class FlowableService implements MetricService {
         return null;
     }
 
-    public void updateConfig(int inputSpeed) {
+    public void updateConfig(int inputSpeed, int threadsCount) {
         this.inputSpeed = inputSpeed;
         backpressureSubscriber.setDelay(inputSpeed);
+        setThreadsCount(threadsCount);
     }
 
     public Map<String, Double> getCurrentMetrics() {
         return backpressureSubscriber.getResult();
+    }
+
+    public void setThreadsCount(int threadsCount) {
+        this.threadsCount = threadsCount;
+        if (threadsCount > pool.getMaximumPoolSize()) {
+            pool.setMaximumPoolSize(threadsCount);
+            pool.setCorePoolSize(threadsCount);
+        } else {
+            pool.setCorePoolSize(threadsCount);
+            pool.setMaximumPoolSize(threadsCount);
+        }
     }
 
     public int getQueueLength() {
