@@ -44,7 +44,6 @@ public class BackpressureSubscriber implements FlowableSubscriber<Deal> {
         String ticker = deal.getInstrument().getTicker();
         Double price = deal.getPrice();
         Thread.sleep(0, delay);
-        System.out.println(delay);
         if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
             result.merge(ticker, price, Double::sum);
         }

@@ -27,7 +27,6 @@ public class SourceController {
         MetricsResponse response = new MetricsResponse();
         response.setAvgValue(flowableService.getCurrentMetrics());
         response.setInputSpeed(flowableService.getInputSpeed());
-        response.setQueueLength(flowableService.getQueueLength());
         return ResponseEntity.ok(response);
     }
 
@@ -47,7 +46,6 @@ public class SourceController {
     static class MetricsResponse {
         private Map<String, Double> avgValue;
         private int inputSpeed;
-        private int queueLength;
     }
 
 }
