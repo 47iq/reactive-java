@@ -14,6 +14,7 @@ import org.iq47.reactivejava.utils.RecordGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
+@EnableWebMvc
 @AllArgsConstructor
 public class ReactiveJavaApplication {
 
@@ -38,29 +40,4 @@ public class ReactiveJavaApplication {
     public static void main(String[] args) {
         SpringApplication.run(ReactiveJavaApplication.class, args);
     }
-
-//    @PostConstruct
-//    public void calculateExecutionTime() {
-//        LocalDate today = LocalDate.now();
-//        for (int dealCnt : dataProperties.getDealQty()) {
-//            System.out.println("\nКоличество объектов: " + dealCnt);
-//            dealRepository.setDealsMap(recordGenerator.generateDeals(dealCnt));
-//            customStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
-//            parallelStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
-//            loopService.getTodayInstrumentTotalTradeVolume(dealRepository);
-//            defaultStreamService.getTodayInstrumentTotalTradeVolume(dealRepository);
-//        }
-//    }
-
-    @PostConstruct
-    public void init() throws IOException {
-        for (int dealCnt : dataProperties.getDealQty()) {
-            String s = objectMapper.writeValueAsString(recordGenerator.generateDeals(dealCnt));
-            File file = new File(String.format("deals_%s.json", dealCnt));
-            file.createNewFile();
-            PrintWriter out = new PrintWriter(file);
-            out.println(s);
-        }
-    }
-
 }

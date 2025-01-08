@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Метрики</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        div {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            margin: 5px 0;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Метрики системы</h1>
+
+<div>
+    <h2>Текущие значения</h2>
+    <p>Скорость поступления событий: <span id="inputSpeed" th:text="${inputSpeed}">0</span></p>
+    <p>Длина очереди обработки: <span id="queueLength" th:text="${queueLength}">0</span></p>
+
+    <h2>Значения метрик</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Ключ</th>
+            <th>Значение</th>
+        </tr>
+        </thead>
+        <tbody id="metricsTableBody">
+        <!-- Динамически заполняемые строки таблицы -->
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h2>Обновить значения</h2>
+    <label for="newInputSpeed">Скорость поступления событий:</label>
+    <input type="number" id="newInputSpeed" name="inputSpeed" required>
+
+    <button id="submitButton">Отправить</button>
+    <div class="error-message" id="error-message"></div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Функция для обновления метрик
+        function updateMetrics() {
+            $.ajax({
+                type: 'GET',
+                url: '/data',
+                success: function(response) {
+                    // Обновление остальных значений
+                    $('#inputSpeed').text(response.inputSpeed);
+                    $('#queueLength').text(response.queueLength);
+
+                    // Очистка предыдущих значений в таблице
+                    $('#metricsTableBody').empty();
+
+                    // Заполнение таблицы новыми значениями для avgValue
+                    for (const [key, value] of Object.entries(response.avgValue)) {
+                        $('#metricsTableBody').append('<tr><td>' + key + '</td><td>' + value.toFixed(2) + '</td></tr>');
+                    }
+
+                    // Скрыть ошибку при успешном получении данных
+                    $('#error-message').text('');
+                },
+                error: function() {
+                    $('#error-message').text('Ошибка при получении данных!');
+                }
+            });
+        }
+
+        // Обновление данных каждые 3 секунды
+        setInterval(updateMetrics, 3000);
+
+        $('#submitButton').click(function() {
+            var inputSpeed = $('#newInputSpeed').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/data',
+                data: JSON.stringify({
+                    inputSpeed: inputSpeed,
+                }),
+                contentType: 'application/json',
+                success: function(response) {
+                    // Обновление значений на странице
+                    updateMetrics();
+                    $('#error-message').text('Данные успешно отправлены!'); // Успешное сообщение
+                },
+                error: function() {
+                    $('#error-message').text('Ошибка при отправке данных!');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

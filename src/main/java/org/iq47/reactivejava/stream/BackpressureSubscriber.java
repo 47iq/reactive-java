@@ -3,6 +3,7 @@ package org.iq47.reactivejava.stream;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.FlowableSubscriber;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.iq47.reactivejava.dto.Deal;
 import org.iq47.reactivejava.repository.DealRepository;
@@ -17,6 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BackpressureSubscriber implements FlowableSubscriber<Deal> {
     private final long BATCH_SIZE = 10;
     private final DealRepository dealRepository;
+    @Setter
+    @Getter
+    private int delay;
     @Getter
     Map<String, Double> result;
     private Subscription subscription;
@@ -39,10 +43,12 @@ public class BackpressureSubscriber implements FlowableSubscriber<Deal> {
         dealRepository.loadDataFromDb();
         String ticker = deal.getInstrument().getTicker();
         Double price = deal.getPrice();
+        Thread.sleep(0, delay);
+        System.out.println(delay);
         if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {
             result.merge(ticker, price, Double::sum);
         }
-        subscription.request(BATCH_SIZE);
+        subscription.request(1);
     }
 
     @Override
