@@ -71,11 +71,16 @@
             padding: 10px;
             border: 1px solid #ccc;
             text-align: center;
+            transition: background-color 0.5s ease; /* Плавный переход цвета фона */
         }
 
         th {
             background-color: #4CAF50;
             color: white;
+        }
+
+        .highlight {
+            background-color: #a5d6a7; /* Цвет подсветки (светло-зеленый) */
         }
     </style>
 </head>
@@ -113,6 +118,8 @@
 </div>
 
 <script>
+    let previousValues = {};
+
     $(document).ready(function() {
         // Функция для обновления метрик
         function updateMetrics() {
@@ -131,8 +138,26 @@
 
                     // Заполнение таблицы новыми значениями для avgValue
                     for (const [key, value] of Object.entries(response.avgValue)) {
-                        $('#metricsTableBody').append('<tr><td>' + key + '</td><td>' + value.toFixed(2) + '</td></tr>');
+                        const formattedValue = value.toFixed(2);
+                        $('#metricsTableBody').append('<tr><td>' + key + '</td><td class="avgValue">' + formattedValue + '</td></tr>');
                     }
+
+                    // Проверка на изменения и анимация
+                    $('.avgValue').each(function() {
+                        const currentValue = parseFloat($(this).text());
+                        const key = $(this).parent().find('td:first').text();
+                        const previousValue = previousValues[key];
+
+                        if (previousValue !== undefined && previousValue !== currentValue) {
+                            $(this).addClass('highlight');
+                            setTimeout(() => {
+                                $(this).removeClass('highlight');
+                            }, 1000);
+                        }
+
+                        // Обновление предыдущих значений
+                        previousValues[key] = currentValue;
+                    });
 
                     // Скрыть ошибку при успешном получении данных
                     $('#error-message').text('');

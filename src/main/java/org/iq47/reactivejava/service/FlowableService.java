@@ -46,7 +46,7 @@ public class FlowableService implements MetricService {
     private int inputSpeed;
     final BlockingQueue<Deal> queue = new LinkedBlockingQueue<>();
     ScheduledExecutorService inputScheduler = new ScheduledThreadPoolExecutor(1);
-    private LocalDateTime lastScaleTime = LocalDateTime.now();
+    private LocalDateTime lastScaleStartTime = LocalDateTime.now();
     private int lastRecordedQueueSize = 0;
 
 
@@ -76,23 +76,23 @@ public class FlowableService implements MetricService {
                     it -> Flowable
                             .just(it)
                             .map(x -> {
-                                System.out.println(Integer.MAX_VALUE - pool.getQueue().remainingCapacity());
+//                                System.out.println(Integer.MAX_VALUE - pool.getQueue().remainingCapacity());
                                 if (Integer.MAX_VALUE - pool.getQueue().remainingCapacity() > 10000 &&
                                         Integer.MAX_VALUE - pool.getQueue().remainingCapacity() > lastRecordedQueueSize &&
-                                        ChronoUnit.MILLIS.between(lastScaleTime, LocalDateTime.now()) > 1000) {
-                                    lastScaleTime = LocalDateTime.now();
-                                    synchronized (backpressureSubscriber) {
-                                        if (threadsCount <= 21) {
-                                            setThreadsCount(threadsCount + 1);
-                                            if (backpressureSubscriber.getDelay() > 0) {
-                                                backpressureSubscriber.setDelay(backpressureSubscriber.getDelay() - 1);
-                                            }
+                                        ChronoUnit.MILLIS.between(lastScaleStartTime, LocalDateTime.now()) > 100) {
+                                    lastScaleStartTime = LocalDateTime.now();
+                                    int currentThreadsCount = threadsCount;
+                                    int currentDelay = backpressureSubscriber.getDelay();
+                                    if (currentThreadsCount <= 21) {
+                                        setThreadsCount(currentThreadsCount + 1);
+                                        if (currentDelay > 1) {
+                                            backpressureSubscriber.setDelay(currentDelay - 1);
+                                        }
+                                        lastRecordedQueueSize = Integer.MAX_VALUE - pool.getQueue().remainingCapacity();
+                                    } else {
+                                        if (currentDelay > 1) {
+                                            backpressureSubscriber.setDelay(currentDelay - 1);
                                             lastRecordedQueueSize = Integer.MAX_VALUE - pool.getQueue().remainingCapacity();
-                                        } else {
-                                            if (backpressureSubscriber.getDelay() > 0) {
-                                                backpressureSubscriber.setDelay(backpressureSubscriber.getDelay() - 1);
-                                                lastRecordedQueueSize = Integer.MAX_VALUE - pool.getQueue().remainingCapacity();
-                                            }
                                         }
                                     }
                                 }
