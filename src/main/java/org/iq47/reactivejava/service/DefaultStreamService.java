@@ -21,7 +21,7 @@ public class DefaultStreamService implements MetricService {
                 .stream()
                 .peek(deal -> {
                     try {
-                        dealRepository.loadDataFromDb();
+                        dealRepository.loadDataFromDb(1);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

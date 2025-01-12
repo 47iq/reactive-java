@@ -32,7 +32,7 @@ public class CustomObserver implements Observer<Deal> {
     @SneakyThrows
     @Override
     public void onNext(@NonNull Deal deal) {
-        dealRepository.loadDataFromDb();
+        dealRepository.loadDataFromDb(1);
         String ticker = deal.getInstrument().getTicker();
         Double price = deal.getPrice();
         if (deal.getTradeDateTime().toLocalDate().equals(LocalDate.now())) {

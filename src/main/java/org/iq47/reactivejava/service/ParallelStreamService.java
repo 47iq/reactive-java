@@ -21,7 +21,7 @@ public class ParallelStreamService implements MetricService {
                 .parallel()
                 .peek(deal -> {
                     try {
-                        dealRepository.loadDataFromDb();
+                        dealRepository.loadDataFromDb(1);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

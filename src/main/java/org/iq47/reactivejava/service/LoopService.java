@@ -20,7 +20,7 @@ public class LoopService implements MetricService {
         Map<String, Double> result = new HashMap<>();
         for (Deal deal : dealRepository.getDeals()) {
             try {
-                dealRepository.loadDataFromDb();
+                dealRepository.loadDataFromDb(1);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

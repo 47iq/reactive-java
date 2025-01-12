@@ -18,9 +18,7 @@ public class DealRepository {
         return dealsMap.values().stream().toList();
     }
 
-    public void loadDataFromDb() throws InterruptedException {
-        if (delayEnabled) {
-            Thread.sleep(0, 1);
-        }
+    public void loadDataFromDb(int delay) throws InterruptedException {
+        Thread.sleep(0, delay * 1000);
     }
 }

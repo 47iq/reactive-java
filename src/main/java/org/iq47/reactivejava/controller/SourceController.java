@@ -28,19 +28,20 @@ public class SourceController {
         response.setAvgValue(flowableService.getCurrentMetrics());
         response.setInputSpeed(flowableService.getInputSpeed());
         response.setThreadsCount(flowableService.getThreadsCount());
+        response.setHandleDelay(flowableService.getBackpressureSubscriber().getDelay());
+        response.setQueueSize(Integer.MAX_VALUE - flowableService.getPool().getQueue().remainingCapacity());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/data")
     public ResponseEntity<Void> postData(@RequestBody MetricsRequest request) {
-        flowableService.updateConfig(request.getInputSpeed(), request.getThreadsCount());
+        flowableService.updateConfig(request.getInputSpeed());
         return ResponseEntity.ok().build();
     }
 
     @Data
     static class MetricsRequest {
         private int inputSpeed;
-        private int threadsCount;
     }
 
     @Data
@@ -48,6 +49,8 @@ public class SourceController {
         private Map<String, Double> avgValue;
         private int inputSpeed;
         private int threadsCount;
+        int queueSize;
+        int handleDelay;
     }
 
 }
