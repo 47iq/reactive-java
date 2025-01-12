@@ -53,10 +53,10 @@ public class FlowableService implements MetricService {
     @PostConstruct
     public void init() {
         backpressureSubscriber.setDelay(100);
-        inputSpeed = 100;
-        inputScheduler.scheduleAtFixedRate(() -> {
+        inputSpeed = 10000;
+        inputScheduler.scheduleWithFixedDelay(() -> {
             queue.offer(recordGenerator.generateDeal());
-        }, 1000, inputSpeed, TimeUnit.MICROSECONDS);
+        }, inputSpeed, inputSpeed, TimeUnit.NANOSECONDS);
 
         pool = (ThreadPoolExecutor) newFixedThreadPool(1);
         scheduler = Schedulers.from(pool);
@@ -77,7 +77,7 @@ public class FlowableService implements MetricService {
                             .just(it)
                             .map(x -> {
                                 System.out.println(Integer.MAX_VALUE - pool.getQueue().remainingCapacity());
-                                if (Integer.MAX_VALUE - pool.getQueue().remainingCapacity() > 100000 &&
+                                if (Integer.MAX_VALUE - pool.getQueue().remainingCapacity() > 10000 &&
                                         Integer.MAX_VALUE - pool.getQueue().remainingCapacity() > lastRecordedQueueSize &&
                                         ChronoUnit.MILLIS.between(lastScaleTime, LocalDateTime.now()) > 1000) {
                                     lastScaleTime = LocalDateTime.now();
@@ -123,6 +123,12 @@ public class FlowableService implements MetricService {
 
     public void updateConfig(int inputSpeed) {
         this.inputSpeed = inputSpeed;
+        this.inputScheduler.shutdown();
+        ScheduledExecutorService inputScheduler = new ScheduledThreadPoolExecutor(1);
+        inputScheduler.scheduleWithFixedDelay(() -> {
+            queue.offer(recordGenerator.generateDeal());
+        }, inputSpeed, inputSpeed, TimeUnit.NANOSECONDS);
+        this.inputScheduler = inputScheduler;
     }
 
     public Map<String, Double> getCurrentMetrics() {
