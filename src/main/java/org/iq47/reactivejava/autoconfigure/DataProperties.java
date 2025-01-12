@@ -14,6 +14,10 @@ public class DataProperties {
     private int accountQty;
     private int instrumentQty;
     private List<Integer> dealQty;
-    private boolean delayEnabled;
     private String serviceType;
+    private int initialGenearteDelayNs;
+    private int initialHandleDelayNs;
+    private int queueScaleSize;
+    private int scaleDelayMillis;
+    private int maxThreads;
 }

@@ -19,6 +19,6 @@ public class DealRepository {
     }
 
     public void loadDataFromDb(int delay) throws InterruptedException {
-        Thread.sleep(0, delay * 1000);
+        Thread.sleep(0, delay);
     }
 }

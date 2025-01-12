@@ -91,7 +91,7 @@
     <h2>Текущие значения</h2>
     <p>Задержка поступления событий (нс): <span id="inputSpeed" th:text="${inputSpeed}"></span></p>
     <p>Количество потоков обработки: <span id="threadsCount" th:text="${threadsCount}"></span></p>
-    <p>Задержка обработки события (мкс): <span id="handleDelay" th:text="${handleDelay}"></span></p>
+    <p>Задержка обработки события (нс): <span id="handleDelay" th:text="${handleDelay}"></span></p>
     <p>Количество событий в очереди обработки: <span id="queueSize" th:text="${queueSize}"></span></p>
 
     <h2>Значения метрик</h2>
@@ -110,7 +110,7 @@
 
 <div>
     <h2>Обновить значения</h2>
-    <label for="newInputSpeed">Интервал поступления событий о сделках (мс):</label>
+    <label for="newInputSpeed">Интервал поступления событий о сделках (нс):</label>
     <input type="number" id="newInputSpeed" name="inputSpeed" required>
 
     <button id="submitButton">Отправить</button>

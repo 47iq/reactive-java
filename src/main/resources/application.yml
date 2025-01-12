@@ -3,10 +3,11 @@ spring:
     name: reactive-java
 
 data:
-  dealQty:
-    - "5000"
-  serviceType: OBSERVABLE
-  delayEnabled: true
+  initialGenearteDelayNs: "10000"
+  initialHandleDelayNs: "100000"
+  queueScaleSize: "10000"
+  scaleDelayMillis: "3000"
+  maxThreads: "20"
   accountQty: "100"
   tickers:
     - AFLT
